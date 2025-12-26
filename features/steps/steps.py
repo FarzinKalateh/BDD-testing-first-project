@@ -31,8 +31,6 @@ def search_result(context, state, text):
     else: #state == "NOT see"
         assert not exists
 
-
-
 @step('I should {state} myself logged in as "{user_name}"')
 def logged_in(context, state, user_name):
     login_btn = context.driver.find_element(By.XPATH,"""//*[(@id = "loginbtn")]""")
@@ -45,61 +43,6 @@ def logged_in(context, state, user_name):
         assert True if len(temp) == 1 else False
     else: #state == "NOT see"
         assert False if len(temp) == 1 else True
-
-@when('I bookmark it as {state}')
-def bookmarking(context, state):
-    bookmark_btn = context.driver.find_element(By.XPATH,"""//*[contains(concat( " ", @class, " " ), concat( " ", "bookmark--trigger", " " ))]""")
-    hov = ActionChains(context.driver).move_to_element(bookmark_btn)
-    hov.perform()
-
-    target_btns = context.driver.find_elements(By.XPATH,"""//*[contains(concat( " ", @class, " " ), concat( " ", "bookmark__popup-list__item system active", " " ))]""")
-    for i in target_btns:
-        if i.text == state:
-            target_btn = i
-            break
-    hov = ActionChains(context.driver).move_to_element(target_btn)
-    hov.perform()
-
-@then('I should see "{novelname}" bookmarked as {state}')
-def check_bookmark(context, novelname, state):
-    tab = context.driver.find_elements(By.XPATH,"""//*[contains(concat( " ", @class, " " ), concat( " ", "system", " " ))]""")
-    for i in tab:
-        if state in i.text:
-            i.click()
-            break
-
-    exists = False
-    novels = context.driver.find_elements(By.XPATH,"""//*[contains(concat( " ", @class, " " ), concat( " ", "fav_story_title", " " ))]//*[contains(concat( " ", @class, " " ), concat( " ", "ellipses", " " ))]""")
-    for novel in novels:
-        if novel.text == novelname:
-            exists = True
-            break
-
-    assert exists
-
-@then('I should remove "{novelname}" bookmark as {state}')
-def remove_bookmark(context, novelname, state):
-    exists = False
-    novels = context.driver.find_elements(By.XPATH,"""//*[contains(concat( " ", @class, " " ), concat( " ", "fav_story_title", " " ))]//*[contains(concat( " ", @class, " " ), concat( " ", "ellipses", " " ))]""")
-    btns = context.driver.find_elements(By.XPATH,"""//*[contains(concat( " ", @class, " " ), concat( " ", "bookmark--trigger", " " ))]""")
-
-    for i in range(len(novels)):
-        novel = novels[i]
-        if novel.text == novelname:
-            exists = True
-            hov = ActionChains(context.driver).move_to_element(btns[i])
-            hov.perform()
-            break
-
-    if exists:
-        state_list = context.driver.find_elements(By.XPATH,"""//*[contains(concat( " ", @class, " " ), concat( " ", "bookmark__popup-list__item system active", " " ))]""")
-        for state_btn in state_list:
-            if state_btn.text == state:
-                hov = ActionChains(context.driver).move_to_element(state_btn)
-                hov.perform()
-                break
-
-    assert exists
 
 
 @step('I try to log in with "{user_name}" and "{password}"')
@@ -114,5 +57,6 @@ def try_login(context, user_name, password):
     password_box = context.driver.find_element(By.XPATH,"""//*[(@id = "login_password")]""")
     password_box.clear()
     password_box.send_keys(password)
+
 
     password_box.submit()
